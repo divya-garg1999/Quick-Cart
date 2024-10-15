@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:quickcart/View/home_screen.dart';
-import 'package:quickcart/View/add_product_screen.dart';
-import 'package:quickcart/View/favorites_screen.dart';
-import 'package:quickcart/View/settings_screen.dart';
+import 'home_screen.dart';
+import 'add_product_screen.dart';
+import 'history_screen.dart'; // New import for History Screen
+import 'settings_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   @override
@@ -12,11 +12,11 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   int _selectedIndex = 0;
 
-
-  static List<Widget> selectScreen = <Widget>[
+  // Screens list
+  final List<Widget> selectScreen = <Widget>[
     HomeScreen(),
     AddProductScreen(),
-    FavoritesScreen(),
+    HistoryScreen(), // Updated to use HistoryScreen
     SettingsScreen(),
   ];
 
@@ -30,11 +30,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Dashboard'),
+        title: Text(''),
       ),
-      body: Center(
-        child: selectScreen.elementAt(_selectedIndex),
-      ),
+      body: selectScreen.elementAt(_selectedIndex),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -46,8 +44,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
             label: 'Add Product',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
-            label: 'Favorites',
+            icon: Icon(Icons.history), // Changed icon for History
+            label: 'History', // Changed label to History
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),
@@ -55,9 +53,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.blue,
+        selectedItemColor: Colors.blue[900],
         unselectedItemColor: Colors.grey,
         onTap: _onItemTapped,
+        type: BottomNavigationBarType.fixed, // Ensures all items are visible
       ),
     );
   }

@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'view/splash_screen.dart';
-import 'view/introduction_screen.dart';
+import 'views/splash_screen.dart';
+import 'views/introduction_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: SplashScreen(), // Start at the SplashScreen
+      home: SplashScreen(),
     );
   }
 }

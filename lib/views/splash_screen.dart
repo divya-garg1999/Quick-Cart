@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:quickcart/View/introduction_screen.dart';
+import 'package:quickcart/views/introduction_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   @override

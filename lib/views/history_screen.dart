@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 
-class HomeScreen extends StatelessWidget {
+class HistoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text('History'),
+      ),
       body: Center(
         child: Text(
-          'Home Screen',
+          'This is the History Screen',
           style: TextStyle(fontSize: 24),
         ),
       ),
