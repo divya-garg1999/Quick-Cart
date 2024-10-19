@@ -16,7 +16,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   final List<Widget> selectScreen = <Widget>[
     HomeScreen(),
     AddProductScreen(),
-    HistoryScreen(), // Updated to use HistoryScreen
+    HistoryScreen(), //
     SettingsScreen(),
   ];
 
