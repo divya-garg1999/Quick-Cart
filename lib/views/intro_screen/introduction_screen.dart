@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../dashboard_screen.dart';
+import '../dash_board_screen/dashboard_screen.dart';
+
 import 'intro_controller.dart';
 
 class IntroductionScreen extends StatelessWidget {
@@ -19,7 +20,7 @@ class IntroductionScreen extends StatelessWidget {
               children: [
                 const Spacer(),
                 SizedBox(
-                  height: screenHeight/2 + 100,
+                  height: screenHeight / 2 + 100,
                   child: PageView.builder(
                     onPageChanged: (index) {
                       controller.currentPage.value = index;
@@ -49,17 +50,17 @@ class IntroductionScreen extends StatelessWidget {
                   ),
                 ),
                 Obx(() => Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        _previousWidget(controller.currentPage),
-                        if (controller.currentPage.value <
-                            controller.introItems.length - 1)
-                          _nextWidget("Next"),
-                        if (controller.currentPage.value ==
-                            controller.introItems.length - 1)
-                          _nextWidget("Finish"),
-                      ],
-                    )),
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _previousWidget(controller.currentPage),
+                    if (controller.currentPage.value <
+                        controller.introItems.length - 1)
+                      _nextWidget("Next"),
+                    if (controller.currentPage.value ==
+                        controller.introItems.length - 1)
+                      _nextWidget("Finish"),
+                  ],
+                )),
               ],
             ),
             _skipWidget(screenWidth)
@@ -77,7 +78,7 @@ class IntroductionScreen extends StatelessWidget {
           if (title == "Next") {
             controller.nextPage();
           } else {
-            Get.to(DashboardScreen());
+            Get.to(DashboardScreen()); // Navigate to DashboardScreen
           }
         },
         child: _buttonContainer(title),
@@ -114,9 +115,9 @@ class IntroductionScreen extends StatelessWidget {
   }
 
   Widget _previousWidget(RxInt currentPage) {
-    if(currentPage == 0){
+    if (currentPage.value == 0) {
       return const SizedBox(width: 12);
-    }else{
+    } else {
       return Padding(
         padding: const EdgeInsets.only(left: 20.0),
         child: TextButton(
@@ -129,29 +130,30 @@ class IntroductionScreen extends StatelessWidget {
 
   Widget _skipWidget(double screenWidth) {
     return Positioned(
-        top: 20,
-        width: screenWidth,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Obx(() => Text(
-                "${controller.currentPage.value + 1}/3",
-                style: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.black,
-                    fontWeight: FontWeight.w600),
-              )),
-              TextButton(
-                onPressed: () {
-                  Get.to(DashboardScreen());
-                },
-                child: _buttonContainer("Skip"),
-              ),
-            ],
-          ),
-        ));
+      top: 20,
+      width: screenWidth,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Obx(() => Text(
+              "${controller.currentPage.value + 1}/3",
+              style: const TextStyle(
+                  fontSize: 14,
+                  color: Colors.black,
+                  fontWeight: FontWeight.w600),
+            )),
+            TextButton(
+              onPressed: () {
+                Get.to(DashboardScreen()); // Navigate to DashboardScreen
+              },
+              child: _buttonContainer("Skip"),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _titleWidget(String title) {
