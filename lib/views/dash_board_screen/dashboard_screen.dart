@@ -22,6 +22,7 @@ class DashboardScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Dashboard'),
+        automaticallyImplyLeading: false, // This removes the back button
       ),
       body: Obx(() => selectScreen.elementAt(controller.selectedIndex.value)),
       bottomNavigationBar: Obx(() => BottomNavigationBar(

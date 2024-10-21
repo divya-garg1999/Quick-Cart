@@ -1,26 +1,24 @@
-import 'dart:async';
+import 'dart:async'; // Add this import to use Timer
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'intro_screen/introduction_screen.dart';
 
-class SplashScreen extends StatefulWidget {
+class SplashController extends GetxController {
   @override
-  _SplashScreenState createState() => _SplashScreenState();
-}
+  void onInit() {
+    super.onInit();
+    _startTimer();
+  }
 
-class _SplashScreenState extends State<SplashScreen> {
-  @override
-  void initState() {
-    super.initState();
-
+  void _startTimer() {
     Timer(Duration(seconds: 3), () {
-       Get.to(IntroductionScreen());
-      // Navigator.of(context).pushReplacement(
-      //   MaterialPageRoute(builder: (context) => IntroductionScreen()),
-      // );
+      Get.off(IntroductionScreen()); // Replaces the current screen
     });
   }
+}
+
+class SplashScreen extends StatelessWidget {
+  final SplashController controller = Get.put(SplashController());
 
   @override
   Widget build(BuildContext context) {
