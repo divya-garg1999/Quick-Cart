@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dashboard_controller.dart';
-import '../home_screen.dart';
+//import '../hoomepage_screen/home_screen.dart';
+import '../homepage_screen/home_screen.dart'; // Fix the typo in the import path
+
 import '../add_product/add_product_screen.dart';
+
 import '../history_screen.dart';
 import '../settings_screen.dart';
 
