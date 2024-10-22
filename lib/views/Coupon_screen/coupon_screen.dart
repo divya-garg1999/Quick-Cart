@@ -1,42 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // For date formatting
+import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+import 'coupon_controller.dart';
 
-class CouponScreen extends StatefulWidget {
-  @override
-  _CouponScreenState createState() => _CouponScreenState();
-}
-
-class _CouponScreenState extends State<CouponScreen> {
-  final TextEditingController titleController = TextEditingController();
-  final TextEditingController codeController = TextEditingController();
-  final TextEditingController discountController = TextEditingController();
-  final TextEditingController maxDiscountController = TextEditingController();
-  final TextEditingController minOrderAmountController = TextEditingController();
-  final TextEditingController numCouponsController = TextEditingController();
-
-  String? selectedCouponType;
-  DateTime? startDate;
-  DateTime? endDate;
-
-  List<String> couponTypes = ['Discount %', 'Flat Discount'];
-
-  Future<void> _selectDate(BuildContext context, bool isStartDate) async {
-    DateTime? pickedDate = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
-    );
-    if (pickedDate != null && pickedDate != (isStartDate ? startDate : endDate)) {
-      setState(() {
-        if (isStartDate) {
-          startDate = pickedDate;
-        } else {
-          endDate = pickedDate;
-        }
-      });
-    }
-  }
+class CouponScreen extends StatelessWidget {
+  final CouponController controller = Get.put(CouponController());
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +20,7 @@ class _CouponScreenState extends State<CouponScreen> {
           children: [
             // Title
             TextField(
-              controller: titleController,
+              controller: controller.titleController,
               decoration: InputDecoration(
                 labelText: 'Title',
                 border: OutlineInputBorder(),
@@ -62,7 +30,7 @@ class _CouponScreenState extends State<CouponScreen> {
 
             // Code
             TextField(
-              controller: codeController,
+              controller: controller.codeController,
               decoration: InputDecoration(
                 labelText: 'Code',
                 border: OutlineInputBorder(),
@@ -71,29 +39,29 @@ class _CouponScreenState extends State<CouponScreen> {
             SizedBox(height: 16),
 
             // Coupon Type Dropdown
-            DropdownButtonFormField<String>(
+            Obx(() => DropdownButtonFormField<String>(
               decoration: InputDecoration(
                 labelText: 'Type',
                 border: OutlineInputBorder(),
               ),
-              value: selectedCouponType,
+              value: controller.selectedCouponType.value.isEmpty
+                  ? null
+                  : controller.selectedCouponType.value,
               onChanged: (String? newValue) {
-                setState(() {
-                  selectedCouponType = newValue;
-                });
+                controller.selectedCouponType.value = newValue!;
               },
-              items: couponTypes.map<DropdownMenuItem<String>>((String value) {
+              items: controller.couponTypes.map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
                   child: Text(value),
                 );
               }).toList(),
-            ),
+            )),
             SizedBox(height: 16),
 
             // Discount
             TextField(
-              controller: discountController,
+              controller: controller.discountController,
               decoration: InputDecoration(
                 labelText: 'Discount Amount',
                 border: OutlineInputBorder(),
@@ -104,7 +72,7 @@ class _CouponScreenState extends State<CouponScreen> {
 
             // Max Discount (optional)
             TextField(
-              controller: maxDiscountController,
+              controller: controller.maxDiscountController,
               decoration: InputDecoration(
                 labelText: 'Max Discount (Optional)',
                 border: OutlineInputBorder(),
@@ -115,7 +83,7 @@ class _CouponScreenState extends State<CouponScreen> {
 
             // Minimum Order Amount (optional)
             TextField(
-              controller: minOrderAmountController,
+              controller: controller.minOrderAmountController,
               decoration: InputDecoration(
                 labelText: 'Minimum Order Amount (Optional)',
                 border: OutlineInputBorder(),
@@ -125,42 +93,42 @@ class _CouponScreenState extends State<CouponScreen> {
             SizedBox(height: 16),
 
             // Start Date (optional)
-            TextFormField(
+            Obx(() => TextFormField(
               readOnly: true,
               decoration: InputDecoration(
                 labelText: 'Start Date (Optional)',
                 suffixIcon: Icon(Icons.calendar_today),
                 border: OutlineInputBorder(),
               ),
-              onTap: () => _selectDate(context, true),
+              onTap: () => controller.selectDate(context, true),
               controller: TextEditingController(
-                text: startDate != null
-                    ? DateFormat('yyyy-MM-dd').format(startDate!)
+                text: controller.startDate.value != null
+                    ? DateFormat('yyyy-MM-dd').format(controller.startDate.value!)
                     : '',
               ),
-            ),
+            )),
             SizedBox(height: 16),
 
             // End Date (optional)
-            TextFormField(
+            Obx(() => TextFormField(
               readOnly: true,
               decoration: InputDecoration(
                 labelText: 'End Date (Optional)',
                 suffixIcon: Icon(Icons.calendar_today),
                 border: OutlineInputBorder(),
               ),
-              onTap: () => _selectDate(context, false),
+              onTap: () => controller.selectDate(context, false),
               controller: TextEditingController(
-                text: endDate != null
-                    ? DateFormat('yyyy-MM-dd').format(endDate!)
+                text: controller.endDate.value != null
+                    ? DateFormat('yyyy-MM-dd').format(controller.endDate.value!)
                     : '',
               ),
-            ),
+            )),
             SizedBox(height: 16),
 
             // Number of Coupons (optional)
             TextField(
-              controller: numCouponsController,
+              controller: controller.numCouponsController,
               decoration: InputDecoration(
                 labelText: 'Number of Coupons (Optional)',
                 border: OutlineInputBorder(),
