@@ -168,9 +168,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(''),
-      ),
+      
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),

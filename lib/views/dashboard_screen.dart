@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'home_screen.dart';
-import 'add_product_screen.dart';
+import 'home_screen/home_screen.dart';
+import 'add_product/add_product_screen.dart';
 import 'history_screen.dart'; // New import for History Screen
 import 'settings_screen.dart';
 
@@ -29,9 +29,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(''),
-      ),
       body: selectScreen.elementAt(_selectedIndex),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
@@ -41,7 +38,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.add),
-            label: 'Add Product',
+            label: 'Add',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.history), // Changed icon for History
