@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'billing_info_screen.dart'; // Import the BillingInfoScreen
+import 'billing_screen/billing_info_screen.dart'; // Import the BillingInfoScreen
 import 'tax_setup_screen.dart'; // Import the TaxSetupScreen
-import 'coupon_screen.dart'; // Import the CouponScreen
+import 'Coupon_screen/coupon_screen.dart'; // Import the CouponScreen
 
 class SettingsScreen extends StatelessWidget {
   @override
