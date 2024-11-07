@@ -54,6 +54,13 @@ class ProductData extends GetxController {
     return _products.where((product) => product.category == category).toList();
   }
 
+  /// Async method to fetch products by category as Future
+  Future<List<Product>> getProductsByCategoryFuture(String category) async {
+    // Simulate delay for loading data
+    await Future.delayed(Duration(milliseconds: 500));
+    return getProductsByCategory(category);
+  }
+
   /// Adds a new product and notifies listeners
   void addProduct(String name, String category, double price, int stock) {
     if (name.isNotEmpty && price >= 0 && stock >= 0 && _categories.contains(category)) {
@@ -70,6 +77,19 @@ class ProductData extends GetxController {
   void addCategory(String category) {
     if (!_categories.contains(category) && category.isNotEmpty) {
       _categories.add(category);
+    }
+  }
+
+  /// Updates an existing product with new details
+  void updateProduct(Product product, String name, double price, int stock) {
+    final index = _products.indexOf(product);
+    if (index != -1) {
+      _products[index] = Product(
+        name: name,
+        category: product.category, // Maintain the original category
+        price: price,
+        stock: stock,
+      );
     }
   }
 }

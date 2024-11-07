@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'add_product_controller.dart';
+import 'package:quickcart/models/product_data.dart';
 
 class AddProductScreen extends StatelessWidget {
   final AddProductController controller = Get.put(AddProductController());
@@ -9,139 +10,144 @@ class AddProductScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Product'),
+        automaticallyImplyLeading: false, // Removes the back arrow
+        title: Text(''),
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Category header with 'Add Category' button on the same line
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Add Product',
-                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.center,
+                  'Category',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(height: 20),
-                Text(
-                  'Select Category:',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 10),
-                _buildCategoryDropdown(),
-                SizedBox(height: 30),
                 ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue[900],
-                    padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                  ),
-                  onPressed: () => _showAddCategoryDialog(),
-                  child: Text('Add Category', style: TextStyle(color: Colors.white, fontSize: 16)),
-                ),
-                SizedBox(height: 20),
-                Obx(() {
-                  if (controller.selectedCategory.value != null) {
-                    return Column(
-                      children: [
-                        Text('Add Product Details:', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                        SizedBox(height: 10),
-                        _buildTextField(controller.nameController, 'Product Name'),
-                        SizedBox(height: 10),
-                        _buildTextField(controller.priceController, 'Price', isNumber: true),
-                        SizedBox(height: 10),
-                        _buildTextField(controller.stockController, 'Stock', isNumber: true),
-                        SizedBox(height: 20),
-                        ElevatedButton(
-                          onPressed: controller.addProduct,
-                          child: Text('Add Product'),
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: Text('Add Category'),
+                        content: TextField(
+                          controller: controller.categoryController,
+                          decoration: InputDecoration(hintText: 'Category Name'),
                         ),
-                      ],
+                        actions: [
+                          TextButton(
+                            onPressed: controller.addCategory,
+                            child: Text('Add'),
+                          ),
+                        ],
+                      ),
                     );
-                  } else {
-                    return SizedBox.shrink();
-                  }
-                }),
+                  },
+                  child: Text('Add Category'),
+                ),
               ],
             ),
-          ),
-        ),
-      ),
-    );
-  }
+            SizedBox(height: 16),
+            // Horizontal category list
+            Obx(() {
+              return SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: controller.productData.categories.map((category) {
+                    return GestureDetector(
+                      onTap: () => controller.updateCategory(category),
+                      child: Container(
+                        margin: EdgeInsets.symmetric(horizontal: 4),
+                        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: controller.selectedCategory.value == category
+                              ? Colors.blue[900]
+                              : Colors.grey[300],
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          category,
+                          style: TextStyle(
+                            color: controller.selectedCategory.value == category
+                                ? Colors.white
+                                : Colors.black,
+                          ),
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              );
+            }),
+            SizedBox(height: 16),
+            // Displaying products based on selected category
+            Expanded(
+              child: Obx(() {
+                final selectedCategory = controller.selectedCategory.value;
+                final products = controller.productData.getProductsByCategory(selectedCategory);
 
-  // Dropdown for choosing category
-  Widget _buildCategoryDropdown() {
-    return Container(
-      decoration: _inputFieldDecoration(),
-      child: Obx(() {
-        return DropdownButton<String>(
-          hint: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text('Choose a category'),
-          ),
-          value: controller.selectedCategory.value,
-          onChanged: (String? newValue) {
-            controller.selectedCategory.value = newValue;
-          },
-          isExpanded: true,
-          items: controller.productData.categories
-              .map<DropdownMenuItem<String>>((String value) {
-            return DropdownMenuItem<String>(
-              value: value,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(value),
+                return products.isEmpty
+                    ? Center(child: Text('No products found in this category'))
+                    : ListView.builder(
+                  itemCount: products.length,
+                  itemBuilder: (context, index) {
+                    final product = products[index];
+                    return ListTile(
+                      title: Text(product.name),
+                      subtitle: Text('Price: \$${product.price} | Stock: ${product.stock}'),
+                    );
+                  },
+                );
+              }),
+            ),
+            SizedBox(height: 16),
+            // Add Product button at the bottom center
+            Center(
+              child: ElevatedButton(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: Text('Add Product'),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          TextField(
+                            controller: controller.nameController,
+                            decoration: InputDecoration(hintText: 'Product Name'),
+                          ),
+                          TextField(
+                            controller: controller.priceController,
+                            decoration: InputDecoration(hintText: 'Price'),
+                            keyboardType: TextInputType.number,
+                          ),
+                          TextField(
+                            controller: controller.stockController,
+                            decoration: InputDecoration(hintText: 'Stock'),
+                            keyboardType: TextInputType.number,
+                          ),
+                        ],
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            controller.addProduct(); // Call the method to add the product
+                            Navigator.pop(context); // Close the dialog after submission
+                          },
+                          child: Text('Submit'),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+                child: Text('Add Product'),
               ),
-            );
-          }).toList(),
-        );
-      }),
-    );
-  }
-
-  Widget _buildTextField(TextEditingController controller, String label, {bool isNumber = false}) {
-    return Container(
-      decoration: _inputFieldDecoration(),
-      child: TextField(
-        controller: controller,
-        decoration: InputDecoration(
-          labelText: label,
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
-          contentPadding: EdgeInsets.all(16),
+            ),
+          ],
         ),
-        keyboardType: isNumber ? TextInputType.number : TextInputType.text,
       ),
-    );
-  }
-
-  BoxDecoration _inputFieldDecoration() {
-    return BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(10),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.grey.withOpacity(0.2),
-          spreadRadius: 2,
-          blurRadius: 5,
-          offset: Offset(0, 3),
-        ),
-      ],
-    );
-  }
-
-  // Method to show a dialog for adding a new category
-  void _showAddCategoryDialog() {
-    Get.defaultDialog(
-      title: 'Add Category',
-      content: TextField(
-        controller: controller.categoryController,
-        decoration: InputDecoration(hintText: 'Category Name'),
-      ),
-      actions: [
-        TextButton(onPressed: () => Get.back(), child: Text('Cancel')),
-        TextButton(onPressed: controller.addCategory, child: Text('Add')),
-      ],
     );
   }
 }
