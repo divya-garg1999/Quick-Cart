@@ -1,53 +1,80 @@
-import 'package:get/get.dart';
 import 'package:flutter/material.dart';
-import 'package:quickcart/models/product_data.dart';
+import 'package:get/get.dart';
+import '../../database/DatabaseHelper.dart';
+import '../../models/CategoryData.dart';
 
 class AddProductController extends GetxController {
-  final ProductData productData = ProductData(); // Access to the product data
-  final RxString selectedCategory = 'All'.obs;
+  // Controller for the text input
+  TextEditingController categoryController = TextEditingController();
 
-  // Text controllers for the dialog inputs
-  final TextEditingController categoryController = TextEditingController();
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController priceController = TextEditingController();
-  final TextEditingController stockController = TextEditingController();
+  // List of categories - this can be replaced with your database or storage logic
+  RxList<String> categories = <String>[].obs; // Singleton instance
 
-  // Method to update the selected category
+  final nameController = TextEditingController();
+  final priceController = TextEditingController();
+  final stockController = TextEditingController();
+
+  // To keep track of the selected category (optional, for UI logic)
+  RxString selectedCategory = ''.obs;
+
+  final DatabaseHelper dbHelper = DatabaseHelper(); // Instance of DatabaseHelper
+
+  // Function to add a new category if it doesn't already exist
+  Future<int> addCategory(String newCategory) async {
+    if (newCategory.isNotEmpty) {
+      // Check if the category already exists in the local list (case insensitive comparison)
+      bool categoryExists = categories.any((category) =>
+      category.toLowerCase() == newCategory.toLowerCase());
+
+      if (!categoryExists) {
+        // Add the category to the database
+        CategoryData categoryData = CategoryData(name: newCategory);
+        int id = await dbHelper.addCategory(categoryData);
+
+        if (id > 0) {
+          // Successfully added, update the local list
+          categories.add(newCategory);
+          Get.snackbar('Success', 'Category "$newCategory" added successfully!',
+              snackPosition: SnackPosition.BOTTOM);
+          fetchCategories();
+          return 1;
+        } else {
+          // Show an error if the database insertion failed
+          Get.snackbar(
+              'Database Error', 'Failed to add category "$newCategory".',
+              snackPosition: SnackPosition.BOTTOM);
+          return 0;
+        }
+      } else {
+        // Show a warning if the category already exists
+        Get.snackbar(
+            'Category Exists', 'The category "$newCategory" already exists.',
+            snackPosition: SnackPosition.BOTTOM);
+        return 0;
+      }
+    } else {
+      Get.snackbar(
+          'Invalid Entry', 'The category cannot be empty',
+          snackPosition: SnackPosition.BOTTOM);
+      return 0;
+    }
+  }
+
+  void fetchCategories() async {
+    // Fetch categories from the database
+    List<CategoryData> dbCategories = await dbHelper.getCategories();
+    categories.addAll(dbCategories.map((e) => e.name)); // Update local list
+  }
+
+  // Optional: Update selected category logic
   void updateCategory(String category) {
     selectedCategory.value = category;
   }
 
-  // Method to add a new category
-  void addCategory() {
-    if (categoryController.text.isNotEmpty) {
-      productData.addCategory(categoryController.text);
-      categoryController.clear(); // Clear the input after adding
-      Get.back(); // Close the dialog
-    }
-  }
-
-  // Method to add a new product
-  void addProduct() {
-    final String name = nameController.text;
-    final double price = double.tryParse(priceController.text) ?? 0.0;
-    final int stock = int.tryParse(stockController.text) ?? 0;
-
-    if (name.isNotEmpty && price > 0 && stock >= 0 && selectedCategory.value != 'All') {
-      productData.addProduct(name, selectedCategory.value, price, stock);
-      nameController.clear();
-      priceController.clear();
-      stockController.clear();
-      Get.back(); // Close the dialog
-    }
-  }
-
+  // Dispose controllers when done
   @override
   void onClose() {
-    // Dispose of text controllers to avoid memory leaks
     categoryController.dispose();
-    nameController.dispose();
-    priceController.dispose();
-    stockController.dispose();
     super.onClose();
   }
 }

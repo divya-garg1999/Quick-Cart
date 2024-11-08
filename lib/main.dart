@@ -4,6 +4,7 @@ import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'views/splash_screen.dart';
 
 void main() {
+
   runApp(MyApp());
 }
 

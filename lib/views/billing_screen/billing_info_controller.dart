@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class BillingInfoController extends GetxController {
+
   final TextEditingController brandNameController = TextEditingController();
   final TextEditingController tagLineController = TextEditingController();
   final TextEditingController addressController = TextEditingController();
