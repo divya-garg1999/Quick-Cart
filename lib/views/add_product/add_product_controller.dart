@@ -60,9 +60,12 @@ class AddProductController extends GetxController {
     }
   }
 
+
+
   void fetchCategories() async {
     // Fetch categories from the database
     List<CategoryData> dbCategories = await dbHelper.getCategories();
+    categories.clear();
     categories.addAll(dbCategories.map((e) => e.name)); // Update local list
   }
 

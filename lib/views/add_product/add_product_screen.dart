@@ -180,10 +180,11 @@ class _AddProductScreenState extends State<AddProductScreen> {
         ),
         actions: [
           TextButton(
-            onPressed: () {
+            onPressed: () async {
               final newCategory = controller.categoryController.text.trim();
-              var status = controller.addCategory(newCategory);
+              var status = await controller.addCategory(newCategory);
               if(status == 1){
+                controller.categoryController.text = "";
                 Navigator.pop(context);
               }
             },

@@ -8,10 +8,14 @@ import '../models/ProductData.dart';
 class DatabaseHelper {
   static DatabaseHelper? _databaseHelper; // Singleton object
   static Database? _database;
+
+
   String categoryTable = 'categories';
   String productTable = 'products';
+
   String categoryId = 'id';
   String categoryName = 'name';
+
   String productId = 'id';
   String productName = 'name';
   String productPrice = 'price';
@@ -57,6 +61,7 @@ class DatabaseHelper {
         $categoryName TEXT NOT NULL
       )
     ''');
+
     await db.execute('''
       CREATE TABLE $productTable (
         $productId INTEGER PRIMARY KEY AUTOINCREMENT, 
