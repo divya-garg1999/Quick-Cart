@@ -2,13 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../database/DatabaseHelper.dart';
 import '../../models/CategoryData.dart';
+import '../../models/ProductData.dart';
 
 class AddProductController extends GetxController {
   // Controller for the text input
   TextEditingController categoryController = TextEditingController();
 
   // List of categories - this can be replaced with your database or storage logic
-  RxList<String> categories = <String>[].obs; // Singleton instance
+  RxList<CategoryData> categories = <CategoryData>[].obs; // Singleton instance
+  RxList<ProductData> productList = <ProductData>[].obs; // Singleton instance
 
   final nameController = TextEditingController();
   final priceController = TextEditingController();
@@ -24,7 +26,7 @@ class AddProductController extends GetxController {
     if (newCategory.isNotEmpty) {
       // Check if the category already exists in the local list (case insensitive comparison)
       bool categoryExists = categories.any((category) =>
-      category.toLowerCase() == newCategory.toLowerCase());
+      category.name.toLowerCase() == newCategory.toLowerCase());
 
       if (!categoryExists) {
         // Add the category to the database
@@ -33,7 +35,6 @@ class AddProductController extends GetxController {
 
         if (id > 0) {
           // Successfully added, update the local list
-          categories.add(newCategory);
           Get.snackbar('Success', 'Category "$newCategory" added successfully!',
               snackPosition: SnackPosition.BOTTOM);
           fetchCategories();
@@ -61,12 +62,55 @@ class AddProductController extends GetxController {
   }
 
 
+  // Method to add a new product
+  Future<int> addProduct(
+      String name, String price, int stock, int? categoryId, String? categoryName) async {
+    if (name.isEmpty || price.isEmpty || stock <= 0 || categoryId == null || categoryName == null) {
+      // Validation failed, show an error
+      Get.snackbar('Error', 'All fields are mandatory and must be valid.',
+          snackPosition: SnackPosition.BOTTOM);
+      return 0;
+    }
+
+    // Create a product object (assume you have a ProductData class, or replace with your actual class)
+    ProductData newProduct = ProductData(
+      name: name,
+      price: price,
+      stock: stock.toString(),
+      categoryId: categoryId,
+      categoryName: categoryName,
+    );
+
+    // Add product to database (adjust according to your DatabaseHelper implementation)
+    int result = await dbHelper.addProduct(newProduct);
+
+    if (result > 0) {
+      // Success message
+      Get.snackbar('Success', 'Product "$name" added successfully!',
+          snackPosition: SnackPosition.BOTTOM);
+      return 1;
+    } else {
+      // Error message
+      Get.snackbar('Database Error', 'Failed to add the product "$name".',
+          snackPosition: SnackPosition.BOTTOM);
+
+      return 0;
+    }
+  }
+
 
   void fetchCategories() async {
     // Fetch categories from the database
     List<CategoryData> dbCategories = await dbHelper.getCategories();
     categories.clear();
-    categories.addAll(dbCategories.map((e) => e.name)); // Update local list
+    categories.addAll(dbCategories); // Update local list
+  }
+
+  void fetchAllProduct() async {
+    // Fetch categories from the database
+    List<ProductData> dbProduct = await dbHelper.getAllProducts();
+    productList.clear();
+    productList.addAll(dbProduct); // Update local list
   }
 
   // Optional: Update selected category logic
@@ -78,6 +122,9 @@ class AddProductController extends GetxController {
   @override
   void onClose() {
     categoryController.dispose();
+    nameController.dispose();
+    priceController.dispose();
+    stockController.dispose();
     super.onClose();
   }
 }

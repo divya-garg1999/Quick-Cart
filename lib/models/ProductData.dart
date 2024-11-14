@@ -2,10 +2,12 @@
 class ProductData {
   int? id; // id can be null for new products
   String name;
-  double price;
-  int? categoryId; // Nullable category ID
+  String price;
+  String stock;
+  int? categoryId;
+  String? categoryName;
 
-  ProductData({this.id, required this.name, required this.price, this.categoryId});
+  ProductData({this.id, required this.name, required this.price, required this.stock, this.categoryId, this.categoryName});
 
   // Convert a Product into a Map
   Map<String, dynamic> toMap() {
@@ -13,7 +15,9 @@ class ProductData {
       'id': id,
       'name': name,
       'price': price,
+      'stock': stock,
       'categoryId': categoryId,
+      'categoryName': categoryName,
     };
   }
 
@@ -22,8 +26,10 @@ class ProductData {
     return ProductData(
         id: map['id'],
         name: map['name'],
-        price: map['price'],
-        categoryId: map['categoryId']
+        price: map['price'].toString(),
+        stock: map['stock'].toString(),
+        categoryId: map['categoryId'],
+        categoryName: map['categoryName']
     );
   }
 }

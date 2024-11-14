@@ -9,7 +9,6 @@ class DatabaseHelper {
   static DatabaseHelper? _databaseHelper; // Singleton object
   static Database? _database;
 
-
   String categoryTable = 'categories';
   String productTable = 'products';
 
@@ -18,8 +17,10 @@ class DatabaseHelper {
 
   String productId = 'id';
   String productName = 'name';
-  String productPrice = 'price';
+  String productStock = 'price';
+  String productPrice = 'stock';
   String productCategoryId = 'categoryId';
+  String productCategoryName = 'categoryName';
 
   // Private constructor for singleton pattern
   DatabaseHelper._createInstance();
@@ -63,14 +64,16 @@ class DatabaseHelper {
     ''');
 
     await db.execute('''
-      CREATE TABLE $productTable (
-        $productId INTEGER PRIMARY KEY AUTOINCREMENT, 
-        $productName TEXT NOT NULL, 
-        $productPrice REAL NOT NULL, 
-        $productCategoryId INTEGER, 
-        FOREIGN KEY($productCategoryId) REFERENCES $categoryTable($categoryId) ON DELETE SET NULL
-      )
-    ''');
+  CREATE TABLE $productTable (
+    $productId INTEGER PRIMARY KEY AUTOINCREMENT, 
+    $productName TEXT NOT NULL, 
+    $productPrice TEXT NOT NULL, 
+    $productStock TEXT NOT NULL, 
+    $productCategoryId INTEGER, 
+    $productCategoryName TEXT, 
+    FOREIGN KEY($productCategoryId) REFERENCES $categoryTable($categoryId) ON DELETE SET NULL
+  )
+''');
   }
 
   // Add category
